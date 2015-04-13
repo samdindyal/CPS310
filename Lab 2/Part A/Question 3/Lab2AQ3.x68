@@ -178,13 +178,15 @@ restore_registers   add.l   #4,sp
                     move.l  (sp)+,a0
                     
                     ; Put the stack pointer back for the program counter to resume
-                    move.l  -68(sp),(sp)                    
+                    move.l  -68(sp),(sp) 
+
                     ; Return to sender
                     rts
                 
              
 * Variables and constants
     ORG    $2000
+    
 dialog_message1     dc.b    'Please enter your first number: '  ,0
 dialog_message2     dc.b    'Please enter your second number: ' ,0
 dialog_message3     dc.b    'Please enter your third number: '  ,0

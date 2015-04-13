@@ -138,7 +138,8 @@ restore_registers   add.l   #4,sp
                     move.l  (sp)+,a0
                     
                     ; Put the stack pointer back for the program counter to resume
-                    move.l  -68(sp),(sp)                    
+                    move.l  -68(sp),(sp)   
+                                     
                     ; Return to sender
                     rts
                                   

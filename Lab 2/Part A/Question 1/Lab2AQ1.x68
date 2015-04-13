@@ -2,8 +2,8 @@
 * Title      :  CPS310, Lab 2, Part A - Question 1
 * Written by :  Sam Dindyal
 * Date       :  April 2015
-* Description:  An M68000 program which prints the sum of 2 
-*               predefined numbers.
+* Description:  An M68000 program which prints the sum of 
+*               two predefined numbers.
 *-----------------------------------------------------------
     ORG    $1000
 START:                 
@@ -97,7 +97,8 @@ restore_registers   add.l   #4,sp
                     move.l  (sp)+,a0
                     
                     ; Put the stack pointer back for the program counter to resume
-                    move.l  -68(sp),(sp)                    
+                    move.l  -68(sp),(sp)     
+
                     ; Return to sender
                     rts
                     
