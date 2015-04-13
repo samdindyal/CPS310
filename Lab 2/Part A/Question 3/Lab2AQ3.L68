@@ -1,0 +1,209 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.15.02
+Created On: 13/04/2015 5:19:46 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      :
+00000000                             3  * Written by :
+00000000                             4  * Date       :
+00000000                             5  * Description:
+00000000                             6  *-----------------------------------------------------------
+00001000                             7      ORG    $1000
+00001000                             8  START:  
+00001000                             9      
+00001000  4EB9 00001092             10      jsr     backup_registers
+00001006  4EB9 00001022             11      jsr     process_input
+0000100C  4EB9 00001068             12      jsr     calculate
+00001012  4EB9 0000107E             13      jsr     print_solution
+00001018  4EB9 000010B8             14      jsr     restore_registers
+0000101E                            15  
+0000101E  FFFF FFFF                 16      SIMHALT   
+00001022                            17  
+00001022                            18  * Retrieve four numbers from the keyboard and store them on the stack.
+00001022                            19  process_input   ; Load the effective address of the first dialog message into a1
+00001022  43F9 00002000             20                  lea     dialog_message1,a1
+00001028                            21                  
+00001028                            22                  ; Print the null terminated ASCII string in a1 without a carriage return or line feed
+00001028  700E                      23                  move.l  #14,d0
+0000102A  4E4F                      24                  trap    #15
+0000102C                            25                  
+0000102C                            26                  ; Take in a signed integer from the keyboard and store it into d1
+0000102C  7004                      27                  move.l  #4,d0
+0000102E  4E4F                      28                  trap    #15
+00001030                            29                  
+00001030                            30                  ; Place the signed integer retrieved from the keyboard onto the stack
+00001030  2F01                      31                  move.l  d1,-(sp)
+00001032                            32  
+00001032                            33                  ; Load the effective address of the second dialog message into a1
+00001032  43F9 00002021             34                  lea     dialog_message2,a1
+00001038                            35                  
+00001038                            36                  ; Print the null terminated ASCII string in a1 without a carriage return or line feed
+00001038  700E                      37                  move.l  #14,d0
+0000103A  4E4F                      38                  trap    #15
+0000103C                            39                  
+0000103C                            40                  ; Take in a signed integer from the keyboard and store it into d1
+0000103C  7004                      41                  move.l  #4,d0
+0000103E  4E4F                      42                  trap    #15
+00001040                            43                  
+00001040                            44                  ; Place the signed integer retrieved from the keyboard onto the stack
+00001040  2F01                      45                  move.l  d1,-(sp)
+00001042                            46                  
+00001042                            47                  ; Load the effective address of the third dialog message into a1
+00001042  43F9 00002043             48                  lea     dialog_message3,a1
+00001048                            49                  
+00001048                            50                  ; Print the null terminated ASCII string in a1 without a carriage return or line feed
+00001048  700E                      51                  move.l  #14,d0
+0000104A  4E4F                      52                  trap    #15
+0000104C                            53                  
+0000104C                            54                  ; Take in a signed integer from the keyboard and store it into d1
+0000104C  7004                      55                  move.l  #4,d0
+0000104E  4E4F                      56                  trap    #15
+00001050                            57                  
+00001050                            58                  ; Place the signed integer received from the keyboard onto the stack
+00001050  2F01                      59                  move.l  d1,-(sp)
+00001052                            60  
+00001052                            61                  ; Load the effective address of the fourth dialog message into a1
+00001052  43F9 00002064             62                  lea     dialog_message4,a1
+00001058                            63                  
+00001058                            64                  ; Print the null terminated ASCII string in a1 without a carriage return or line feed
+00001058  700E                      65                  move.l  #14,d0
+0000105A  4E4F                      66                  trap    #15
+0000105C                            67                  
+0000105C                            68                  ; Take in a signed integer from the keyboard
+0000105C  7004                      69                  move.l  #4,d0
+0000105E  4E4F                      70                  trap    #15
+00001060                            71                  
+00001060                            72                  ; Place the signed integer received from the keyboard onto the stack
+00001060  2F01                      73                  move.l  d1,-(sp)
+00001062                            74  
+00001062                            75                  ; Restore the program counter from the stack
+00001062  2F2F 0010                 76                  move.l  16(sp),-(sp)
+00001066                            77  
+00001066                            78                  ; Return to sender
+00001066  4E75                      79                  rts
+00001068                            80  
+00001068                            81  * Calculate the solution using the formula and the numbers entered by the user and store it on the stack.
+00001068                            82  calculate   ; Move the first number into d0
+00001068  202F 0010                 83              move.l  16(sp),d0
+0000106C                            84  
+0000106C                            85              ; Subtract the second number from the first number and store it in d0
+0000106C  90AF 000C                 86              sub.l   12(sp),d0
+00001070                            87              
+00001070                            88              ; Add the third number to the contents of d0
+00001070  D0AF 0008                 89              add.l   8(sp),d0
+00001074                            90              
+00001074                            91              ; Subtract the fourth number from the contents of d0
+00001074  90AF 0004                 92              sub.l   4(sp),d0
+00001078                            93              
+00001078                            94              ; Move the completed solution onto the stack with auto decrement
+00001078  2F00                      95              move.l  d0,-(sp)
+0000107A                            96              
+0000107A                            97              ; Put the stack pointer back
+0000107A  588F                      98              add.l   #4,sp
+0000107C                            99      
+0000107C                           100              ; Return to sender
+0000107C  4E75                     101              rts
+0000107E                           102              
+0000107E                           103  * Print the solution created by the "calculate" subroutine from the stack.
+0000107E                           104  print_solution      ; Load the effective address of the solution message into a1
+0000107E  43F9 00002086            105                      lea     solution_message,a1
+00001084                           106  
+00001084                           107                      ; Print the null terminated ASCII string without a carriage return or line feed
+00001084  700E                     108                      move.l  #14,d0
+00001086  4E4F                     109                      trap    #15
+00001088                           110                      
+00001088                           111                      ; Fetch the solution created by the "calculate" subroutine and place it into d1
+00001088  222F 0004                112                      move.l  4(sp),d1
+0000108C                           113                      
+0000108C                           114                      ; Print the solution
+0000108C  7003                     115                      move.l  #3,d0
+0000108E  4E4F                     116                      trap    #15
+00001090                           117                      
+00001090                           118                      ; Return to sender
+00001090  4E75                     119                      rts
+00001092                           120  
+00001092                           121  *Backup all registers to the stack using auto decrement
+00001092                           122  backup_registers    ; Backup address registers to stack with auto decrement
+00001092  2F08                     123                      move.l  a0,-(sp)
+00001094  2F09                     124                      move.l  a1,-(sp)
+00001096  2F0A                     125                      move.l  a2,-(sp)
+00001098  2F0B                     126                      move.l  a3,-(sp)
+0000109A  2F0C                     127                      move.l  a4,-(sp)
+0000109C  2F0D                     128                      move.l  a5,-(sp)
+0000109E  2F0E                     129                      move.l  a6,-(sp)
+000010A0  2F0F                     130                      move.l  a7,-(sp)
+000010A2                           131                      
+000010A2                           132                      ; Backup data registers to stack with auto decrement
+000010A2  2F00                     133                      move.l  d0,-(sp)
+000010A4  2F01                     134                      move.l  d1,-(sp)
+000010A6  2F02                     135                      move.l  d2,-(sp)
+000010A8  2F03                     136                      move.l  d3,-(sp)
+000010AA  2F04                     137                      move.l  d4,-(sp)
+000010AC  2F05                     138                      move.l  d5,-(sp)
+000010AE  2F06                     139                      move.l  d6,-(sp)
+000010B0  2F07                     140                      move.l  d7,-(sp)
+000010B2                           141                      
+000010B2                           142                      ; Restore the program counter for resumption
+000010B2  2F2F 0040                143                      move.l  64(sp),-(sp)
+000010B6                           144                      
+000010B6                           145                      ; Return to sender
+000010B6  4E75                     146                      rts
+000010B8                           147  
+000010B8                           148  * Restore all content to registers using auto increment
+000010B8  588F                     149  restore_registers   add.l   #4,sp
+000010BA                           150  
+000010BA                           151                     ; Restore content from stack to data registers using auto increment
+000010BA  2E1F                     152                      move.l  (sp)+,d7
+000010BC  2C1F                     153                      move.l  (sp)+,d6
+000010BE  2A1F                     154                      move.l  (sp)+,d5
+000010C0  281F                     155                      move.l  (sp)+,d4
+000010C2  261F                     156                      move.l  (sp)+,d3
+000010C4  241F                     157                      move.l  (sp)+,d2
+000010C6  221F                     158                      move.l  (sp)+,d1
+000010C8  201F                     159                      move.l  (sp)+,d0
+000010CA                           160                      
+000010CA                           161                      ; Restore content from stack to address registers using auto increment
+000010CA  2E5F                     162                      move.l  (sp)+,a7
+000010CC  2C5F                     163                      move.l  (sp)+,a6
+000010CE  2A5F                     164                      move.l  (sp)+,a5
+000010D0  285F                     165                      move.l  (sp)+,a4
+000010D2  265F                     166                      move.l  (sp)+,a3
+000010D4  245F                     167                      move.l  (sp)+,a2
+000010D6  225F                     168                      move.l  (sp)+,a1
+000010D8  205F                     169                      move.l  (sp)+,a0
+000010DA                           170                      
+000010DA                           171                      ; Put the stack pointer back for the program counter to resume
+000010DA  2EAF FFBC                172                      move.l  -68(sp),(sp)                    
+000010DE                           173                      ; Return to sender
+000010DE  4E75                     174                      rts
+000010E0                           175                  
+000010E0                           176               
+000010E0                           177  * Variables and constants
+00002000                           178      ORG    $2000
+00002000= 50 6C 65 61 73 65 ...    179  dialog_message1     dc.b    'Please enter your first number: '  ,0
+00002021= 50 6C 65 61 73 65 ...    180  dialog_message2     dc.b    'Please enter your second number: ' ,0
+00002043= 50 6C 65 61 73 65 ...    181  dialog_message3     dc.b    'Please enter your third number: '  ,0
+00002064= 50 6C 65 61 73 65 ...    182  dialog_message4     dc.b    'Please enter your fourth number: ' ,0
+00002086                           183  
+00002086= 54 68 65 20 73 6F ...    184  solution_message    dc.b    'The solution is: ',0
+00002098                           185  
+00002098                           186      END    START        ; last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+BACKUP_REGISTERS    1092
+CALCULATE           1068
+DIALOG_MESSAGE1     2000
+DIALOG_MESSAGE2     2021
+DIALOG_MESSAGE3     2043
+DIALOG_MESSAGE4     2064
+PRINT_SOLUTION      107E
+PROCESS_INPUT       1022
+RESTORE_REGISTERS   10B8
+SOLUTION_MESSAGE    2086
+START               1000
