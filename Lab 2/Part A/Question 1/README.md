@@ -1,5 +1,5 @@
-#Lab 2
-##CPS310 (Computer Organization II)
+#CPS310 (Computer Organization II)
+##Lab 2
 ###Part A
 
 ####Question 1
