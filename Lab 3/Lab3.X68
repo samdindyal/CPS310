@@ -83,7 +83,7 @@ done_loop1:     ; Overwrite a with the result from loop1, 3a, on the stack
                 ; New counter is 2
                 move.l  #2,d0
 
-loop2:  ; Loop until d0 is greater than 2 
+loop2:  ; Loop until d0 is greater than or equal to 2 
         tst.l    d0
         ble done_loop2
         
@@ -216,6 +216,7 @@ solution_message    dc.b    'The solution is: ',0
 
 
     END    START        ; last line of source
+
 
 
 *~Font name~Courier New~

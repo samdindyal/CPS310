@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.02
-Created On: 2015-04-14 10:35:08 AM
+Created On: 2015-04-14 8:23:14 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      :  CPS310, Lab 3
@@ -87,7 +87,7 @@ Created On: 2015-04-14 10:35:08 AM
 00001064                            83                  ; New counter is 2
 00001064  7002                      84                  move.l  #2,d0
 00001066                            85  
-00001066                            86  loop2:  ; Loop until d0 is greater than 2 
+00001066                            86  loop2:  ; Loop until d0 is greater than or equal to 2 
 00001066  4A80                      87          tst.l    d0
 00001068  6F00 000A                 88          ble done_loop2
 0000106C                            89          

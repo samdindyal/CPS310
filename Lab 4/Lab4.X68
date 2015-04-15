@@ -126,7 +126,7 @@ write_loop:     ; Loop until d3 is 0
                 tst.l   d3
                 beq     done_write_loop
                 
-                ; Read in from "file" and store it into "array"
+                ; Write to "file" from "array"
                 move.l  #54,d0
                 trap    #15
                 
@@ -241,6 +241,7 @@ array_size  dc.b    5
 file        dc.b    'file',0
 
     END    START        ; last line of source
+
 
 
 

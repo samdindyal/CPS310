@@ -1,6 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.02
-Created On: 2015-04-14 6:16:51 PM
+Created On: 2015-04-14 8:57:20 PM
 
 00000000                             1  *-----------------------------------------------------------
 00000000                             2  * Title      :  CPS310, Lab 4
@@ -130,7 +130,7 @@ Created On: 2015-04-14 6:16:51 PM
 000010AA  4A83                     126                  tst.l   d3
 000010AC  6700 000C                127                  beq     done_write_loop
 000010B0                           128                  
-000010B0                           129                  ; Read in from "file" and store it into "array"
+000010B0                           129                  ; Write to "file" from "array"
 000010B0  7036                     130                  move.l  #54,d0
 000010B2  4E4F                     131                  trap    #15
 000010B4                           132                  
