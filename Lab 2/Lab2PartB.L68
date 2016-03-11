@@ -1,0 +1,37 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.15.02
+Created On: 02/02/2015 10:22:12 AM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      :  CPS310 - Lab2, Part A2
+00000000                             3  * Written by :  Sam Dindyal
+00000000                             4  * Date       :  February 2015
+00000000                             5  * Description:  A simple code that takes in two values and displays their difference.
+00000000                             6  *-----------------------------------------------------------
+00001000                             7      ORG    $1000
+00001000                             8  START:                  ; first instruction of program
+00001000                             9  
+00001000                            10  * Put program code here
+00001000  7004                      11     MOVE.L   #4,D0
+00001002  4E4F                      12     TRAP     #15
+00001004  2601                      13     MOVE.L   D1,D3
+00001006  4E4F                      14     TRAP     #15
+00001008  9681                      15     SUB.L    D1,D3
+0000100A  2203                      16     MOVE.L   D3,D1
+0000100C  7014                      17     MOVE.L   #20,D0
+0000100E  4E4F                      18     TRAP     #15
+00001010                            19          
+00001010                            20  * Put variables and constants here
+00001010  =00002000                 21  VAL     EQU     $2000
+00001010                            22  
+00001010                            23      END    START        ; last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+START               1000
+VAL                 2000

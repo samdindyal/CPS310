@@ -1,0 +1,70 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.15.02
+Created On: 15/03/2015 2:22:12 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      :
+00000000                             3  * Written by :
+00000000                             4  * Date       :
+00000000                             5  * Description:
+00000000                             6  *-----------------------------------------------------------
+00001000                             7      ORG    $1000
+00001000                             8  START:                  ; first instruction of program
+00001000                             9  
+00001000                            10  * Put program code here
+00001000  6100 000E                 11      bsr     open_file
+00001004  6100 0018                 12      bsr     write_array
+00001008  6100 0042                 13      bsr     close_file
+0000100C                            14  
+0000100C  FFFF FFFF                 15      SIMHALT             ; halt simulator
+00001010                            16  
+00001010  43F9 00002018             17  open_file   lea     file,a1
+00001016  303C 0034                 18              move.w  #52,d0
+0000101A  4E4F                      19              trap    #15
+0000101C  4E75                      20              rts
+0000101E                            21              
+0000101E                            22  write_array 
+0000101E  23F9 00002014 0000201E    23               move.l  array_size,counter            
+00001028  7404                      24               move.l  #4,d2
+0000102A  43F9 00002000             25               lea     array,a1
+00001030                            26  
+00001030  4AB9 0000201E             27  loop:   tst.l   counter   
+00001036  6F00 0012                 28          ble     done_loop
+0000103A  303C 0036                 29          move.w  #54,d0
+0000103E  4E4F                      30          trap    #15
+00001040  5889                      31          addq.l  #4,a1
+00001042                            32  
+00001042  53B9 0000201E             33          subq.l  #1,counter
+00001048  60E6                      34          bra     loop
+0000104A                            35  
+0000104A  4E75                      36  done_loop:  rts
+0000104C                            37  
+0000104C  303C 0032                 38  close_file  move.w  #50,d0
+00001050  4E4F                      39              trap    #15
+00001052  4E75                      40              rts
+00001054                            41  
+00001054                            42  * Put variables and constants here
+00002000                            43      ORG     $2000
+00002000= 00000001 00000002 ...     44  array        dc.l    1,2,3,4,5
+00002014= 00000005                  45  array_size   dc.l    5
+00002018= 66 69 6C 65 00            46  file         dc.b    'file',0
+0000201E= 00000000                  47  counter      dc.l    0
+00002022                            48      END    START        ; last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+ARRAY               2000
+ARRAY_SIZE          2014
+CLOSE_FILE          104C
+COUNTER             201E
+DONE_LOOP           104A
+FILE                2018
+LOOP                1030
+OPEN_FILE           1010
+START               1000
+WRITE_ARRAY         101E

@@ -1,0 +1,168 @@
+00001000 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.15.02
+Created On: 17/03/2015 5:37:31 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      :
+00000000                             3  * Written by :
+00000000                             4  * Date       :
+00000000                             5  * Description:
+00000000                             6  *-----------------------------------------------------------
+00001000                             7      ORG    $1000
+00001000                             8  START:                  ; first instruction of program
+00001000                             9  
+00001000                            10  * Put program code here
+00001000                            11  
+00001000  2F3C 00002000             12      move.l  #file,-(sp)
+00001006  6100 001A                 13      bsr open_file
+0000100A  6100 002A                 14      bsr read_file
+0000100E  6100 001E                 15      bsr close_file
+00001012                            16      
+00001012  303C 0004                 17      move.w  #4,d0
+00001016  4E4F                      18      trap    #15
+00001018  2F01                      19      move.l  d1,-(sp)
+0000101A                            20  
+0000101A  6100 00D4                 21      bsr binary_search
+0000101E  FFFF FFFF                 22      SIMHALT             ; halt simulator
+00001022                            23  
+00001022  226F 0004                 24  open_file   move.l  4(sp),a1
+00001026  303C 0033                 25              move.w  #51,d0
+0000102A  4E4F                      26              trap    #15
+0000102C  4E75                      27              rts
+0000102E                            28              
+0000102E  303C 0032                 29  close_file  move.w  #50,d0
+00001032  4E4F                      30              trap    #15
+00001034  4E75                      31              rts
+00001036                            32  
+00001036  23F9 0000201C 00002020    33  read_file   move.l  array_size,counter
+00001040  43F9 00002008             34              lea     array,a1
+00001046                            35              
+00001046  4AB9 00002020             36  loop:       tst.l   counter
+0000104C  6F00 0016                 37              ble     done_loop
+00001050                            38  
+00001050                            39  
+00001050  343C 0004                 40              move.w  #4,d2
+00001054  303C 0035                 41              move.w  #53,d0
+00001058  4E4F                      42              trap    #15
+0000105A  5889                      43              addq.l  #4,a1
+0000105C                            44              
+0000105C  53B9 00002020             45              sub.l   #1,counter
+00001062  60E2                      46              bra     loop
+00001064                            47  
+00001064  4E75                      48  done_loop:  rts
+00001066                            49  
+00001066  43F9 00002034             50  found       lea      found_message,a1
+0000106C  303C 000D                 51              move.w  #13,d0
+00001070  4E4F                      52              trap    #15
+00001072  60F0                      53              bra     done_loop
+00001074                            54  
+00001074  43F9 00002040             55  not_found   lea     not_found_message,a1
+0000107A  303C 000D                 56              move.w  #13,d0
+0000107E  4E4F                      57              trap    #15
+00001080  60E2                      58              bra     done_loop
+00001082                            59              
+00001082  2439 00002024             60  set_middle  move.l  upper_bound,d2
+00001088  D4B9 00002028             61              add.l   lower_bound,d2            
+0000108E  85FC 0002                 62              divs.w  #2,d2
+00001092  4842                      63              swap    d2
+00001094  4242                      64              clr.w   d2
+00001096  4842                      65              swap    d2
+00001098  23C2 0000202C             66              move.l  d2,middle
+0000109E  4E75                      67              rts
+000010A0                            68  
+000010A0  23F9 0000201C 00002024    69  set_bounds  move.l  array_size,upper_bound
+000010AA  23FC 00000000 00002028    70              move.l  #0,lower_bound
+000010B4  4E75                      71              rts
+000010B6                            72  
+000010B6  23F9 0000202C 00002024    73  go_lower    move.l  middle,upper_bound
+000010C0  53B9 00002024             74              subq.l  #1,upper_bound
+000010C6  6000 0030                 75              bra     search_loop
+000010CA                            76  
+000010CA  23F9 0000202C 00002028    77  go_higher   move.l  middle,lower_bound
+000010D4  52B9 00002028             78              addq.l  #1,lower_bound
+000010DA  6000 001C                 79              bra     search_loop
+000010DE                            80              
+000010DE  2439 0000202C             81  set_offset  move.l  middle,d2
+000010E4  C5FC 0004                 82              muls.w  #4,d2
+000010E8  23C2 00002030             83              move.l  d2,offset
+000010EE  4E75                      84              rts
+000010F0                            85  
+000010F0                            86  
+000010F0  202F 0004                 87  binary_search       move.l  4(sp),d0
+000010F4  61AA                      88                      bsr     set_bounds
+000010F6  618A                      89                      bsr     set_middle
+000010F8                            90                      
+000010F8  2239 00002028             91  search_loop:        move.l  lower_bound,d1
+000010FE  B2B9 00002024             92                      cmp.l   upper_bound,d1  
+00001104  6E00 FF6E                 93                      bgt     not_found
+00001108                            94  
+00001108  41F9 00002008             95                      lea     array,a0
+0000110E  6100 FF72                 96                      bsr     set_middle
+00001112  61CA                      97                      bsr     set_offset
+00001114  D1F9 00002030             98                      add.l   offset,a0
+0000111A                            99                      
+0000111A  B090                     100                      cmp.l   (a0),d0
+0000111C  6700 FF48                101                      beq     found
+00001120                           102  
+00001120  B090                     103                      cmp.l   (a0),d0
+00001122  6D92                     104                      blt     go_lower
+00001124                           105  
+00001124  B090                     106                      cmp.l   (a0),d0
+00001126  6EA2                     107                      bgt     go_higher
+00001128                           108  
+00001128  60CE                     109                      bra     search_loop
+0000112A                           110  
+0000112A                           111  
+0000112A  4E75                     112  done_search:        rts                    
+0000112C                           113  
+0000112C                           114  
+0000112C                           115  * Put variables and constants here
+00002000                           116       ORG $2000
+00002000= 66696C65 00000000        117  file        dc.l    'file',0
+00002008                           118  array       ds.l    5
+0000201C= 00000005                 119  array_size  dc.l    5
+00002020= 00000000                 120  counter     dc.l    0
+00002024                           121  
+00002024= 00000000                 122  upper_bound     dc.l    0
+00002028= 00000000                 123  lower_bound     dc.l    0
+0000202C= 00000000                 124  middle          dc.l    0
+00002030= 00000000                 125  offset          dc.l    0
+00002034                           126  
+00002034= 466F756E 64210000 ...    127  found_message       dc.l    'Found!',0
+00002040= 4E6F7420 666F756E ...    128  not_found_message   dc.l    'Not found!',0
+00002050                           129  
+00002050                           130      END    START        ; last line of source
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+ARRAY               2008
+ARRAY_SIZE          201C
+BINARY_SEARCH       10F0
+CLOSE_FILE          102E
+COUNTER             2020
+DONE_LOOP           1064
+DONE_SEARCH         112A
+FILE                2000
+FOUND               1066
+FOUND_MESSAGE       2034
+GO_HIGHER           10CA
+GO_LOWER            10B6
+LOOP                1046
+LOWER_BOUND         2028
+MIDDLE              202C
+NOT_FOUND           1074
+NOT_FOUND_MESSAGE   2040
+OFFSET              2030
+OPEN_FILE           1022
+READ_FILE           1036
+SEARCH_LOOP         10F8
+SET_BOUNDS          10A0
+SET_MIDDLE          1082
+SET_OFFSET          10DE
+START               1000
+UPPER_BOUND         2024
