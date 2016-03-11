@@ -1,5 +1,6 @@
 00001000 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.15.02
+<<<<<<< HEAD
 Created On: 2015-03-17 8:18:33 PM
 
 00000000                             1  *-----------------------------------------------------------
@@ -91,6 +92,228 @@ Created On: 2015-03-17 8:18:33 PM
 00002004                            87  x       DS.W    1
 00002006                            88  
 00002006                            89          END     START           ; last line of source
+=======
+Created On: 2015-04-14 8:23:14 PM
+
+00000000                             1  *-----------------------------------------------------------
+00000000                             2  * Title      :  CPS310, Lab 3
+00000000                             3  * Written by :  Sam Dindyal
+00000000                             4  * Date       :  April 2015
+00000000                             5  * Description:  An M68000 program which takes in two
+00000000                             6  *               numbers, a and b, and evaluates and prints
+00000000                             7  *               the solution to the following expression:
+00000000                             8  *               x = 3a + sqrt(2b)
+00000000                             9  *-----------------------------------------------------------
+00001000                            10      ORG    $1000
+00001000                            11  START:  
+00001000  4EB9 000010AE             12      jsr     backup_registers
+00001006  4EB9 00001022             13      jsr     process_input
+0000100C  4EB9 00001048             14      jsr     quad
+00001012  4EB9 0000109A             15      jsr     print_solution
+00001018  4EB9 000010D4             16      jsr     restore_registers
+0000101E                            17      
+0000101E  FFFF FFFF                 18      SIMHALT             ; halt simulator
+00001022                            19  
+00001022                            20  * Take in 2 numbers, representing a and b, from the keyboard and store them onto the stack.
+00001022                            21  process_input   ; Load the effective address of the first dialog message into a1
+00001022  43F9 000010FC             22                  lea     dialog_message1,a1
+00001028                            23                  
+00001028                            24                  ; Print the null terminated ASCII string without a line feed or carriage return
+00001028  700E                      25                  move.l  #14,d0
+0000102A  4E4F                      26                  trap    #15
+0000102C                            27                  
+0000102C                            28                  ; Take in a signed integer from the keyboard and store it into d1
+0000102C  7004                      29                  move.l  #4,d0
+0000102E  4E4F                      30                  trap    #15
+00001030                            31                  
+00001030                            32                  ; Move the signed integer from d1 to the stack with auto decrement
+00001030  2F01                      33                  move.l  d1,-(sp)
+00001032                            34                  
+00001032                            35                  ; Load the effective address of the second dialog message into a1
+00001032  43F9 00001119             36                  lea     dialog_message2,a1
+00001038                            37                  
+00001038                            38                   ; Print the null terminated ASCII string without a line feed or carriage return
+00001038  700E                      39                  move.l  #14,d0
+0000103A  4E4F                      40                  trap    #15
+0000103C                            41                  
+0000103C                            42                  ; Take in a signed integer from the keyboard and store it into d1
+0000103C  7004                      43                  move.l  #4,d0
+0000103E  4E4F                      44                  trap    #15
+00001040                            45                  
+00001040                            46                  ; Place the signed integer in d1 onto the stack with auto decrement
+00001040  2F01                      47                  move.l  d1,-(sp)
+00001042                            48                  
+00001042                            49                  ; Put the program counter back on the stack
+00001042  2F2F 0008                 50                  move.l  8(sp),-(sp)
+00001046                            51                  
+00001046                            52                  ; Return to sender
+00001046  4E75                      53                  rts
+00001048                            54  
+00001048                            55  * Solve the expression with the a and b values retrieved from the stack.                
+00001048                            56  quad    ; Clear d0 and d1
+00001048  4280                      57          clr.l   d0  ; d0 is our counter
+0000104A  4281                      58          clr.l   d1
+0000104C                            59          
+0000104C                            60          ; Move 3 into d0
+0000104C  7003                      61          move.l  #3,d0
+0000104E                            62          
+0000104E                            63  loop1:  ; Loop until d0 is greater than 0 
+0000104E  4A80                      64          tst.l   d0
+00001050  6F00 000A                 65          ble     done_loop1
+00001054                            66          
+00001054                            67          ; Add "a" from the stack to d1
+00001054  D2AF 0008                 68          add.l   8(sp),d1
+00001058                            69          
+00001058                            70          ; Decrement the counter
+00001058  5380                      71          sub.l   #1,d0
+0000105A                            72          
+0000105A                            73          ; Branch back to loop1
+0000105A  60F2                      74          bra loop1
+0000105C                            75          
+0000105C                            76  done_loop1:     ; Overwrite a with the result from loop1, 3a, on the stack
+0000105C  2F41 0008                 77                  move.l  d1,8(sp)
+00001060                            78                  
+00001060                            79                  ; Clear d0 and d1
+00001060  4280                      80                  clr.l   d0
+00001062  4281                      81                  clr.l   d1
+00001064                            82                  
+00001064                            83                  ; New counter is 2
+00001064  7002                      84                  move.l  #2,d0
+00001066                            85  
+00001066                            86  loop2:  ; Loop until d0 is greater than or equal to 2 
+00001066  4A80                      87          tst.l    d0
+00001068  6F00 000A                 88          ble done_loop2
+0000106C                            89          
+0000106C                            90          ; Add "b" from the stack to d1
+0000106C  D2AF 0004                 91          add.l   4(sp),d1
+00001070                            92  
+00001070                            93          ; Decrement the counter
+00001070  5380                      94          sub.l   #1,d0
+00001072                            95          
+00001072                            96          ; Branch back to loop2
+00001072  60F2                      97          bra loop2
+00001074                            98  
+00001074                            99  done_loop2: ; Clear d0, d2, d3
+00001074  4280                     100              clr.l   d0
+00001076  4282                     101              clr.l   d2  ; We are using d2 for obtaining odd numbers
+00001078  4283                     102              clr.l   d3  ; We are using d3 for the summation of the odd numbers obtained from incrementing d2
+0000107A                           103              
+0000107A                           104              ; Prepare for summation of odd numbers
+0000107A  7401                     105              move.l  #1,d2
+0000107C                           106  
+0000107C                           107  loop3:  ; Loop until d1 is less than or equal to d3
+0000107C  B283                     108          cmp.l   d3,d1
+0000107E  6F00 000A                109          ble     done_loop3
+00001082                           110          
+00001082                           111          ; Increment d0
+00001082  5280                     112          add.l   #1,d0
+00001084                           113          
+00001084                           114          ; Increment d2 to the next odd number
+00001084  5482                     115          add.l   #2,d2
+00001086                           116          
+00001086                           117          ; Accumulate the summation of odd numbers with the next odd number
+00001086  D682                     118          add.l   d2,d3
+00001088                           119          
+00001088                           120          ; Branch back to loop3
+00001088  60F2                     121          bra loop3
+0000108A                           122          
+0000108A                           123  done_loop3:   ; Replace the old b value with sqrt(2b) on the stack
+0000108A  2F40 0004                124                move.l  d0,4(sp)
+0000108E                           125         
+0000108E                           126         ; Add 3a and sqrt(2b) and store the solution in d0
+0000108E  D0AF 0008                127          add.l    8(sp),d0
+00001092                           128          
+00001092                           129          ; Place the solution from d0 onto the stack
+00001092  2F00                     130          move.l    d0,-(sp)
+00001094                           131              
+00001094                           132          ; Put the program counter back
+00001094  2F2F 0004                133          move.l    4(sp),-(sp)
+00001098                           134          
+00001098                           135          ;Return to sender
+00001098  4E75                     136          rts
+0000109A                           137                
+0000109A                           138  * Print the solution retrieved from the stack from the "quad" subroutine.           
+0000109A                           139  print_solution  ; Load the effective address of the solution message into a1
+0000109A  43F9 00001136            140                  lea     solution_message, a1
+000010A0                           141                  
+000010A0                           142                  ; Print the null terminated ASCII string without a line feed or carriage return
+000010A0  700E                     143                  move.l  #14,d0
+000010A2  4E4F                     144                  trap    #15
+000010A4                           145                  
+000010A4                           146                  ; Move the solution from the stack into d1
+000010A4  222F 0004                147                  move.l  4(sp),d1
+000010A8                           148                  
+000010A8                           149                  ; Print the signed integer from d1 on the screen
+000010A8  7003                     150                  move.l  #3,d0
+000010AA  4E4F                     151                  trap    #15
+000010AC                           152                  
+000010AC                           153                  ; Return to sender
+000010AC  4E75                     154                  rts
+000010AE                           155                  
+000010AE                           156  *Backup all registers to the stack using auto decrement
+000010AE                           157  backup_registers    ; Backup address registers to stack with auto decrement
+000010AE  2F08                     158                      move.l  a0,-(sp)
+000010B0  2F09                     159                      move.l  a1,-(sp)
+000010B2  2F0A                     160                      move.l  a2,-(sp)
+000010B4  2F0B                     161                      move.l  a3,-(sp)
+000010B6  2F0C                     162                      move.l  a4,-(sp)
+000010B8  2F0D                     163                      move.l  a5,-(sp)
+000010BA  2F0E                     164                      move.l  a6,-(sp)
+000010BC  2F0F                     165                      move.l  a7,-(sp)
+000010BE                           166                      
+000010BE                           167                      ; Backup data registers to stack with auto decrement
+000010BE  2F00                     168                      move.l  d0,-(sp)
+000010C0  2F01                     169                      move.l  d1,-(sp)
+000010C2  2F02                     170                      move.l  d2,-(sp)
+000010C4  2F03                     171                      move.l  d3,-(sp)
+000010C6  2F04                     172                      move.l  d4,-(sp)
+000010C8  2F05                     173                      move.l  d5,-(sp)
+000010CA  2F06                     174                      move.l  d6,-(sp)
+000010CC  2F07                     175                      move.l  d7,-(sp)
+000010CE                           176                      
+000010CE                           177                      ; Restore the program counter for resumption
+000010CE  2F2F 0040                178                      move.l  64(sp),-(sp)
+000010D2                           179                      
+000010D2                           180                      ; Return to sender
+000010D2  4E75                     181                      rts
+000010D4                           182  
+000010D4                           183  * Restore all content to registers using auto increment
+000010D4  588F                     184  restore_registers   add.l   #4,sp
+000010D6                           185  
+000010D6                           186                     ; Restore content from stack to data registers using auto increment
+000010D6  2E1F                     187                      move.l  (sp)+,d7
+000010D8  2C1F                     188                      move.l  (sp)+,d6
+000010DA  2A1F                     189                      move.l  (sp)+,d5
+000010DC  281F                     190                      move.l  (sp)+,d4
+000010DE  261F                     191                      move.l  (sp)+,d3
+000010E0  241F                     192                      move.l  (sp)+,d2
+000010E2  221F                     193                      move.l  (sp)+,d1
+000010E4  201F                     194                      move.l  (sp)+,d0
+000010E6                           195                      
+000010E6                           196                      ; Restore content from stack to address registers using auto increment
+000010E6  2E5F                     197                      move.l  (sp)+,a7
+000010E8  2C5F                     198                      move.l  (sp)+,a6
+000010EA  2A5F                     199                      move.l  (sp)+,a5
+000010EC  285F                     200                      move.l  (sp)+,a4
+000010EE  265F                     201                      move.l  (sp)+,a3
+000010F0  245F                     202                      move.l  (sp)+,a2
+000010F2  225F                     203                      move.l  (sp)+,a1
+000010F4  205F                     204                      move.l  (sp)+,a0
+000010F6                           205                      
+000010F6                           206                      ; Put the stack pointer back for the program counter to resume
+000010F6  2EAF FFBC                207                      move.l  -68(sp),(sp) 
+000010FA                           208  
+000010FA                           209                      ; Return to sender
+000010FA  4E75                     210                      rts
+000010FC                           211  
+000010FC                           212  * Variables and constants
+000010FC= 50 6C 65 61 73 65 ...    213  dialog_message1     dc.b    'Please enter a value for a: ',0
+00001119= 50 6C 65 61 73 65 ...    214  dialog_message2     dc.b    'Please enter a value for b: ',0
+00001136= 54 68 65 20 73 6F ...    215  solution_message    dc.b    'The solution is: ',0
+00001148                           216  
+00001148                           217  
+00001148                           218      END    START        ; last line of source
+>>>>>>> 9fa68c5705b35a5878ff79b0f2a27103e8504905
 
 No errors detected
 No warnings generated
@@ -99,6 +322,7 @@ No warnings generated
 SYMBOL TABLE INFORMATION
 Symbol-name         Value
 -------------------------
+<<<<<<< HEAD
 A                   2000
 B                   2002
 BACKUPSTACK         1076
@@ -108,3 +332,20 @@ RESTORE             1084
 SQRT                105E
 START               1000
 X                   2004
+=======
+BACKUP_REGISTERS    10AE
+DIALOG_MESSAGE1     10FC
+DIALOG_MESSAGE2     1119
+DONE_LOOP1          105C
+DONE_LOOP2          1074
+DONE_LOOP3          108A
+LOOP1               104E
+LOOP2               1066
+LOOP3               107C
+PRINT_SOLUTION      109A
+PROCESS_INPUT       1022
+QUAD                1048
+RESTORE_REGISTERS   10D4
+SOLUTION_MESSAGE    1136
+START               1000
+>>>>>>> 9fa68c5705b35a5878ff79b0f2a27103e8504905
